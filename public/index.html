@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrickFlow - Sistema de Control y Producción Ladrillera</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ========================================== -->
+    <!-- MÓDULO 1: BARRA DE NAVEGACIÓN Y PERFIL      -->
+    <!-- ========================================== -->
+    <header class="navbar">
+        <div class="logo">
+            <span class="brand-icon" aria-hidden="true">▦</span>
+            <span>BrickFlow</span>
+            <span class="brand-divider" aria-hidden="true"></span>
+            <span class="brand-subtitle">CONTROL DE PLANTA</span>
+        </div>
+        <div class="nav-links">
+            <span class="nav-context">OPERACIONES</span>
+            <span class="nav-separator" aria-hidden="true">/</span>
+            <strong>Producción ladrillera</strong>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- SECCIÓN HERO: PROBLEMA Y LLAMADO A ACCIÓN  -->
+    <!-- ========================================== -->
+    <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-content">
+            <p class="hero-eyebrow">Gestión de producción para ladrilleras</p>
+            <h1 id="hero-title">Deja de perder ladrillos sin saber dónde ni por qué.</h1>
+            <p class="hero-text">
+                BrickFlow registra cada lote, calcula la merma al instante y clasifica la eficiencia de cada operario,
+                para que decidas con datos reales y no con estimaciones a fin de mes.
+            </p>
+            <div class="hero-actions">
+                <a href="#registro" id="hero-cta" class="btn-cta">Registrar producción de hoy</a>
+                <a href="#historial" class="btn-cta-secondary">Ver historial</a>
+            </div>
+        </div>
+        <ul class="hero-stats" aria-label="Qué resuelve BrickFlow">
+            <li>
+                <strong>Merma</strong>
+                <span>Porcentaje de daño calculado por lote</span>
+            </li>
+            <li>
+                <strong>Eficiencia</strong>
+                <span>Clasificación automática por operario</span>
+            </li>
+            <li>
+                <strong>Reportes</strong>
+                <span>Exportación a Excel y PDF en un clic</span>
+            </li>
+        </ul>
+    </section>
+
+    <div class="dashboard-container">
+        
+        <!-- CONTENEDOR SUPERIOR: DISEÑO DE DOS COLUMNAS -->
+        <div class="top-grid">
+            
+            <!-- ========================================== -->
+            <!-- MÓDULO 2: REGISTRO DIARIO (Formularios)    -->
+            <!-- ========================================== -->
+            <section class="card form-card" id="registro">
+                <h2>Registro de producción</h2>
+                <form id="production-form">
+                    
+                    <div class="form-group">
+                        <label for="operator-name">Operario a Cargo</label>
+                        <input type="text" id="operator-name" class="form-input" placeholder="Ej. Carlos Pérez" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brick-type">Tipo de Ladrillo / Bloque</label>
+                        <select id="brick-type" class="form-input">
+                            <option value="Ladrillo Rojo 18 Huecos">Ladrillo Rojo (18 Huecos)</option>
+                            <option value="Ladrillo Pandereta">Ladrillo Pandereta</option>
+                            <option value="Ladrillo King Kong 18H">Ladrillo King Kong (18 Huecos)</option>
+                            <option value="Ladrillo King Kong 9H">Ladrillo King Kong (9 Huecos)</option>
+                            <option value="Bloque de Concreto 10cm">Bloque de Concreto (10 cm)</option>
+                            <option value="Bloque de Concreto 15cm">Bloque de Concreto (15 cm)</option>
+                            <option value="Bloque de Concreto 20cm">Bloque de Concreto (20 cm)</option>
+                            <option value="Teja Arrabal / Teja Criolla">Teja Arrabal / Teja Criolla</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="molded-amount">Ladrillos Fabricados</label>
+                            <input type="number" id="molded-amount" class="form-input" placeholder="Ej. 3000" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="damaged-amount">Ladrillos Dañados (Merma)</label>
+                            <input type="number" id="damaged-amount" class="form-input" placeholder="Ej. 150" required>
+                        </div>
+                    </div>
+
+                    <!-- Campos Meta Opcional -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="goal-amount">Meta (Opcional)</label>
+                            <input type="number" id="goal-amount" class="form-input" placeholder="Ej. 5000">
+                        </div>
+                        <div class="form-group">
+                            <label for="goal-months">Plazo (Meses)</label>
+                            <input type="number" id="goal-months" class="form-input" placeholder="Ej. 12">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Guardar Registro</button>
+                </form>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- MÓDULO 3: PANEL DE CONTROL (KPIs)          -->
+            <!-- ========================================== -->
+            <section class="card kpi-card">
+                <h2>Indicadores de planta</h2>
+                
+                <div class="kpi-box main-kpi">
+                    <h3>Producción Real Neta</h3>
+                    <p id="kpi-total">0</p>
+                </div>
+
+                <div class="kpi-box">
+                    <h3>Porcentaje de Merma o Daños</h3>
+                    <p id="kpi-merma">0.0%</p>
+                </div>
+
+                <div class="kpi-status-box">
+                    <h3>Estado de Hornos e Insumos</h3>
+                    <p class="status-ok">✔ Horno 1 y 2 en óptima temperatura</p>
+                    <p class="status-ok">✔ Stock de Arcilla y Combustible Estable</p>
+                </div>
+            </section>
+
+        </div> <!-- Fin del top-grid -->
+
+        <!-- ========================================== -->
+        <!-- MÓDULO 4: REPORTES Y CONSULTAS INTELIGENTES -->
+        <!-- ========================================== -->
+        <section class="card table-card" id="historial">
+                <h2>Historial y consultas</h2>
+            
+            <!-- Barra de Herramientas del Módulo 4 -->
+            <div class="module4-toolbar">
+                <input type="text" id="question-input" class="form-input" placeholder="Pregunta en lenguaje natural (ej. '¿Cuánto produjo Carlos el martes?')..." aria-label="Pregunta sobre el historial de producción" />
+                <button type="button" id="question-submit" class="btn-query">Consultar</button>
+                <button type="button" id="export-excel" class="btn-export" title="Descargar archivo CSV compatible con Excel">Excel</button>
+                <button type="button" id="export-pdf" class="btn-export btn-export-pdf">PDF</button>
+            </div>
+            <p id="question-result" class="question-result" role="status" aria-live="polite"></p>
+            <p id="export-result" class="export-result" role="status" aria-live="polite"></p>
+
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Operario</th>
+                            <th>Tipo de Pieza</th>
+                            <th>Fabricados</th>
+                            <th>Dañados</th>
+                            <th>Eficiencia (Clasificación)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Se llena dinámicamente con JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
