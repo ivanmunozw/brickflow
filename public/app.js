@@ -107,6 +107,7 @@ function getProductionQuestionAnswer(rawQuestion, rows) {
         'hoy', 'ayer', 'anoche', 'anteayer', 'total', 'promedio', 'media', 'mas', 'menos', 'fue', 'todos', 'todas', 'todo', 'toda',
         'llamado', 'llamada', 'nombre', 'semana', 'actual', 'pasada', 'anterior', 'ultima', 'mes', 'ano',
         'es', 'son', 'cuál', 'cual', 'dime', 'muestra', 'indica', 'informa', 'hubieron', 'se', 'ha', 'han',
+        'merma', 'mermas', 'porcentaje', 'danados', 'danadas', 'eficiencia', 'neto', 'neta', 'lote', 'lotes', 'tasa',
         ...monthNames,
         ...weekdayNames.keys()
     ]);
@@ -118,13 +119,11 @@ function getProductionQuestionAnswer(rawQuestion, rows) {
             /\b(?:operario|obrero|trabajador)\s+(?:el|la)?\s*([a-z]+)/,
             /\b(?:de|del|para|por|produjo|producir|fabrico|hizo|trabajo|registro)\s+(?:el|la)?\s*([a-z]+)/
         ];
-        for (const pattern of workerPatterns) {
-            const candidate = question.match(pattern)?.[1];
-            if (candidate && !stopWords.has(candidate) && !products.some(name => name.includes(candidate))) {
-                requestedOperator = candidate;
-                break;
-            }
-        }
+        const operatorWords = new Set(operators.flatMap(name => name.split(/\s+/)));
+        const candidates = workerPatterns
+            .flatMap(pattern => [...question.matchAll(new RegExp(pattern.source, 'g'))].map(match => match[1]))
+            .filter(candidate => candidate && !stopWords.has(candidate) && !products.some(name => name.includes(candidate)));
+        requestedOperator = candidates.find(candidate => operatorWords.has(candidate)) || candidates[0] || null;
     }
 
     const topicWords = /\b(produccion|produjo|produjeron|producir|salieron|sacaron|fabricacion|fabrico|fabricar|hizo|hicieron|ladrillo|ladrillos|bloque|bloques|pieza|piezas|merma|danad|eficiencia|registro|lote|hornada|operario|obrero|trabajador|total|promedio|media|cantidad|cuanto|cuanta|cuantos|cuantas|porcentaje|por\s+ciento|porciento|neto|util|bueno|rendimiento)\b/.test(question);
@@ -233,78 +232,257 @@ function getProductionQuestionAnswer(rawQuestion, rows) {
     return filteredRows.map(row => Array.from(row.cells).map(cell => cell.textContent.trim()).join(' | ')).join(' · ');
 }
 
-document.getElementById('production-form').addEventListener('submit', function(e) {
+const productionForm = document.getElementById('production-form');
+const productionResult = document.getElementById('production-result');
+const productionStorageKey = 'brickflow.productionRecords.v1';
+const tableBody = document.getElementById('table-body');
+const inventoryBody = document.getElementById('inventory-body');
+const brickTypeSelect = document.getElementById('brick-type');
+const productionState = {
+    currency: 'USD',
+    products: [],
+    productionRecords: [],
+    savedRecords: []
+};
+
+function getEfficiency(mermaPercentage) {
+    if (mermaPercentage <= 5) return { category: 'Muy Eficiente', color: '#27ae60' };
+    if (mermaPercentage <= 10) return { category: 'Eficiente', color: '#2980b9' };
+    if (mermaPercentage <= 20) return { category: 'Deficiente', color: '#d35400' };
+    return { category: 'Muy Deficiente', color: '#c0392b' };
+}
+
+function formatNumber(value) {
+    return new Intl.NumberFormat('es').format(value);
+}
+
+function getSavedRecords() {
+    const storedRecords = localStorage.getItem(productionStorageKey);
+    if (storedRecords === null) return [];
+
+    const parsedRecords = JSON.parse(storedRecords);
+    if (!Array.isArray(parsedRecords)) {
+        throw new Error('El historial guardado tiene un formato inválido.');
+    }
+
+    return parsedRecords;
+}
+
+function renderProductOptions(products) {
+    brickTypeSelect.replaceChildren();
+    for (const { id, nombre } of products) {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = nombre;
+        brickTypeSelect.append(option);
+    }
+    brickTypeSelect.disabled = products.length === 0;
+}
+
+function renderInventory(products, savedRecords) {
+    inventoryBody.replaceChildren();
+
+    for (const product of products) {
+        const producedSinceLoad = savedRecords
+            .filter(record => record.productId === product.id)
+            .reduce((total, record) => total + record.molded - record.damaged, 0);
+        const row = document.createElement('tr');
+        const values = [
+            product.nombre,
+            product.categoria,
+            new Intl.NumberFormat('es', {
+                style: 'currency',
+                currency: productionState.currency
+            }).format(product.precioUnitario),
+            `${formatNumber(product.stockDisponible + producedSinceLoad)} ${product.unidadStock}`
+        ];
+
+        for (const value of values) {
+            const cell = document.createElement('td');
+            cell.textContent = value;
+            row.append(cell);
+        }
+        inventoryBody.append(row);
+    }
+}
+
+function createProductionRow(record) {
+    const row = document.createElement('tr');
+    row.dataset.date = record.date;
+    const date = new Date(`${record.date}T00:00:00`);
+    const efficiency = getEfficiency(record.mermaPercentage);
+    const values = [
+        date.toLocaleDateString(),
+        record.operatorName,
+        record.brickType,
+        record.molded,
+        record.damaged
+    ];
+
+    for (const [index, value] of values.entries()) {
+        const cell = document.createElement('td');
+        if (index === 1) {
+            const operator = document.createElement('strong');
+            operator.textContent = value;
+            cell.append(operator);
+        } else {
+            cell.textContent = value;
+        }
+        row.append(cell);
+    }
+
+    const efficiencyCell = document.createElement('td');
+    const badge = document.createElement('span');
+    badge.textContent = `${efficiency.category} (${record.mermaPercentage}%)`;
+    badge.style.backgroundColor = efficiency.color;
+    badge.style.color = 'white';
+    badge.style.padding = '4px 8px';
+    badge.style.borderRadius = '4px';
+    badge.style.fontWeight = 'bold';
+    badge.style.fontSize = '0.8rem';
+    efficiencyCell.append(badge);
+    row.append(efficiencyCell);
+    return row;
+}
+
+function renderProductionHistory(records) {
+    tableBody.replaceChildren();
+    const sortedRecords = [...records].sort((first, second) => second.date.localeCompare(first.date));
+    for (const record of sortedRecords) {
+        tableBody.append(createProductionRow(record));
+    }
+
+    const totals = records.reduce((summary, record) => ({
+        molded: summary.molded + record.molded,
+        damaged: summary.damaged + record.damaged
+    }), { molded: 0, damaged: 0 });
+    const wasteRate = totals.molded ? (totals.damaged / totals.molded) * 100 : 0;
+    document.getElementById('kpi-total').textContent = formatNumber(totals.molded - totals.damaged);
+    document.getElementById('kpi-merma').textContent = `${wasteRate.toFixed(1)}%`;
+}
+
+function normalizeJsonRecord({ id, fecha, operarioId, productoId, cantidadFabricada, cantidadDanada, mermaPorcentaje }, operators, products) {
+    const operator = operators.find(({ id: operatorId }) => operatorId === operarioId);
+    const product = products.find(({ id: productId }) => productId === productoId);
+    if (!operator || !product) {
+        throw new Error(`El registro ${id} referencia un operario o producto inexistente.`);
+    }
+
+    return {
+        id,
+        date: fecha,
+        operatorName: operator.nombre,
+        brickType: product.nombre,
+        productId: productoId,
+        molded: cantidadFabricada,
+        damaged: cantidadDanada,
+        mermaPercentage: mermaPorcentaje
+    };
+}
+
+async function initializeApp() {
+    const submitButton = productionForm.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    productionResult.textContent = 'Cargando datos de producción...';
+
+    try {
+        const response = await fetch('./data.json');
+        if (!response.ok) {
+            throw new Error(`No se pudo cargar data.json (HTTP ${response.status}).`);
+        }
+
+        const { empresa, operarios, productos, registrosProduccion } = await response.json();
+        if (![operarios, productos, registrosProduccion].every(Array.isArray)) {
+            throw new Error('data.json no contiene las listas de operarios, productos y producción esperadas.');
+        }
+
+        if (empresa?.moneda) productionState.currency = empresa.moneda;
+        productionState.products = productos;
+        const baseRecords = registrosProduccion.map(record =>
+            normalizeJsonRecord(record, operarios, productos)
+        );
+        productionState.savedRecords = getSavedRecords();
+        productionState.productionRecords = [...baseRecords, ...productionState.savedRecords];
+
+        renderProductOptions(productionState.products);
+        renderInventory(productionState.products, productionState.savedRecords);
+        renderProductionHistory(productionState.productionRecords);
+        submitButton.disabled = false;
+        productionResult.textContent = '';
+    } catch (error) {
+        productionResult.textContent = window.location.protocol === 'file:'
+            ? 'Para cargar data.json, abre el proyecto desde un servidor local (por ejemplo, Live Server en VS Code), no directamente como archivo.'
+            : `No se pudieron cargar los datos. ${error.message}`;
+    }
+}
+
+productionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // 1. Capturar valores
-    const operatorName = document.getElementById('operator-name').value;
-    const brickType = document.getElementById('brick-type').selectedOptions[0].text;
-    const molded = parseInt(document.getElementById('molded-amount').value) || 0;
-    const damaged = parseInt(document.getElementById('damaged-amount').value) || 0;
+    const operatorName = document.getElementById('operator-name').value.trim();
+    const productId = brickTypeSelect.value;
+    const molded = Number(document.getElementById('molded-amount').value);
+    const damaged = Number(document.getElementById('damaged-amount').value);
 
-    // Validaciones
-    if (molded <= 0) {
-        alert('La cantidad fabricada debe ser mayor a cero.');
+    if (!operatorName) {
+        productionResult.textContent = 'Ingresa el nombre del operario.';
         return;
     }
-    if (damaged > molded) {
-        alert('Los ladrillos dañados no pueden superar a los fabricados.');
+    if (!Number.isInteger(molded) || molded <= 0) {
+        productionResult.textContent = 'La cantidad fabricada debe ser un número entero mayor a cero.';
+        return;
+    }
+    if (!Number.isInteger(damaged) || damaged < 0 || damaged > molded) {
+        productionResult.textContent = 'La cantidad dañada debe ser un entero entre cero y la cantidad fabricada.';
+        return;
+    }
+    if (!productId) {
+        productionResult.textContent = 'Selecciona un producto válido.';
         return;
     }
 
-    // 2. Cálculos y porcentajes de merma
-    const validProduction = molded - damaged;
-    const mermaPercentage = parseFloat(((damaged / molded) * 100).toFixed(1));
-
-    // 3. Sistema de clasificación corregido (El 20% ahora marca deficiente correctamente)
-    let categoriaEficiencia = '';
-    let colorBadge = '';
-
-    if (mermaPercentage <= 5) {
-        categoriaEficiencia = 'Muy Eficiente';
-        colorBadge = '#27ae60'; // Verde oscuro (0% - 5%)
-    } else if (mermaPercentage <= 10) {
-        categoriaEficiencia = 'Eficiente';
-        colorBadge = '#2980b9'; // Azul (5.1% - 10%)
-    } else if (mermaPercentage <= 20) {
-        categoriaEficiencia = 'Deficiente';
-        colorBadge = '#d35400'; // Naranja (10.1% - 20%)
-    } else {
-        categoriaEficiencia = 'Muy Deficiente';
-        colorBadge = '#c0392b'; // Rojo (Más del 20%)
+    // La merma se calcula sobre la producción fabricada y el inventario recibe solo las piezas aprobadas.
+    const product = productionState.products.find(({ id }) => id === productId);
+    if (!product) {
+        productionResult.textContent = 'El producto seleccionado ya no está disponible. Recarga los datos e inténtalo de nuevo.';
+        return;
     }
 
-    // 4. Actualizar KPIs (Módulo 3)
-    document.getElementById('kpi-total').innerText = validProduction > 0 ? validProduction : 0;
-    document.getElementById('kpi-merma').innerText = mermaPercentage + '%';
-
-    // 5. Agregar fila en la tabla del historial (Módulo 4)
-    const tableBody = document.getElementById('table-body');
+    const mermaPercentage = Number(((damaged / molded) * 100).toFixed(1));
     const today = new Date();
-    const currentDate = today.toLocaleDateString();
     const currentIsoDate = [today.getFullYear(), String(today.getMonth() + 1).padStart(2, '0'), String(today.getDate()).padStart(2, '0')].join('-');
+    const record = {
+        id: `PR-local-${Date.now()}`,
+        date: currentIsoDate,
+        operatorName,
+        brickType: product.nombre,
+        productId,
+        molded,
+        damaged,
+        mermaPercentage
+    };
 
-    const newRow = document.createElement('tr');
-    newRow.dataset.date = currentIsoDate;
-    newRow.innerHTML = `
-        <td>${currentDate}</td>
-        <td><strong>${operatorName}</strong></td>
-        <td>${brickType}</td>
-        <td>${molded}</td>
-        <td>${damaged}</td>
-        <td><span style="background-color: ${colorBadge}; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem;">${categoriaEficiencia} (${mermaPercentage}%)</span></td>
-    `;
-    
-    tableBody.prepend(newRow);
+    try {
+        const updatedRecords = [record, ...productionState.savedRecords];
+        localStorage.setItem(productionStorageKey, JSON.stringify(updatedRecords));
+        productionState.savedRecords = updatedRecords;
+    } catch (error) {
+        productionResult.textContent = `No se pudo guardar el registro. Verifica el espacio disponible del navegador e inténtalo de nuevo. ${error.message}`;
+        return;
+    }
 
-    // Limpiar campos del formulario
+    productionState.productionRecords.push(record);
+    renderProductionHistory(productionState.productionRecords);
+    renderInventory(productionState.products, productionState.savedRecords);
+
     document.getElementById('molded-amount').value = '';
     document.getElementById('damaged-amount').value = '';
     document.getElementById('goal-amount').value = '';
     document.getElementById('goal-months').value = '';
-
-    alert('¡Lote registrado exitosamente de acuerdo con la distribución modular del sistema!');
+    productionResult.textContent = 'Registro guardado correctamente en este navegador.';
 });
+
+initializeApp();
 
 const questionInput = document.getElementById('question-input');
 const questionResult = document.getElementById('question-result');

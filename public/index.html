@@ -76,15 +76,8 @@
 
                     <div class="form-group">
                         <label for="brick-type">Tipo de Ladrillo / Bloque</label>
-                        <select id="brick-type" class="form-input">
-                            <option value="Ladrillo Rojo 18 Huecos">Ladrillo Rojo (18 Huecos)</option>
-                            <option value="Ladrillo Pandereta">Ladrillo Pandereta</option>
-                            <option value="Ladrillo King Kong 18H">Ladrillo King Kong (18 Huecos)</option>
-                            <option value="Ladrillo King Kong 9H">Ladrillo King Kong (9 Huecos)</option>
-                            <option value="Bloque de Concreto 10cm">Bloque de Concreto (10 cm)</option>
-                            <option value="Bloque de Concreto 15cm">Bloque de Concreto (15 cm)</option>
-                            <option value="Bloque de Concreto 20cm">Bloque de Concreto (20 cm)</option>
-                            <option value="Teja Arrabal / Teja Criolla">Teja Arrabal / Teja Criolla</option>
+                        <select id="brick-type" class="form-input" required disabled>
+                            <option value="">Cargando productos...</option>
                         </select>
                     </div>
 
@@ -112,6 +105,7 @@
                     </div>
 
                     <button type="submit" class="btn-submit">Guardar Registro</button>
+                    <p id="production-result" class="production-result" role="status" aria-live="polite"></p>
                 </form>
             </section>
 
@@ -139,6 +133,25 @@
             </section>
 
         </div> <!-- Fin del top-grid -->
+
+        <section class="card table-card inventory-card" id="inventario">
+            <h2>Inventario de productos</h2>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Precio unitario</th>
+                            <th>Stock disponible</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-body">
+                        <tr><td colspan="4">Cargando inventario...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
         <!-- ========================================== -->
         <!-- MÓDULO 4: REPORTES Y CONSULTAS INTELIGENTES -->
@@ -177,6 +190,6 @@
 
     </div>
 
-    <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>

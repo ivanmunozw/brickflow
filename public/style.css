@@ -466,6 +466,13 @@ html {
     font-size: 0.87rem;
 }
 
+.production-result {
+    min-height: 1.2em;
+    margin-top: 10px;
+    color: #705a49;
+    font-size: 0.87rem;
+}
+
 .export-result {
     min-height: 1.2em;
     margin: -9px 0 10px;
@@ -610,4 +617,3 @@ html {
         transition-duration: 0.01ms !important;
     }
 }
-

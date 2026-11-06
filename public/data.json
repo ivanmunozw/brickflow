@@ -1,0 +1,282 @@
+{
+  "empresa": {
+    "nombre": "Ladrillera BrickFlow",
+    "moneda": "USD",
+    "datosSimulados": true
+  },
+  "operarios": [
+    {
+      "id": "OP-001",
+      "nombre": "Carlos Mendoza",
+      "correo": "carlos.mendoza@example.com",
+      "fechaRegistro": "2024-03-12",
+      "rol": "Operario de moldeo",
+      "estado": "activo",
+      "registrosProduccionIds": ["PR-2026-1101", "PR-2026-1104"]
+    },
+    {
+      "id": "OP-002",
+      "nombre": "Lucía Fernández",
+      "correo": "lucia.fernandez@example.com",
+      "fechaRegistro": "2024-06-08",
+      "rol": "Operaria de horno",
+      "estado": "activo",
+      "registrosProduccionIds": ["PR-2026-1102", "PR-2026-1105"]
+    },
+    {
+      "id": "OP-003",
+      "nombre": "Mateo Rojas",
+      "correo": "mateo.rojas@example.com",
+      "fechaRegistro": "2023-11-20",
+      "rol": "Operario de producción",
+      "estado": "activo",
+      "registrosProduccionIds": ["PR-2026-1030", "PR-2026-1103"]
+    },
+    {
+      "id": "OP-004",
+      "nombre": "Sofía Castillo",
+      "correo": "sofia.castillo@example.com",
+      "fechaRegistro": "2025-01-15",
+      "rol": "Supervisora de planta",
+      "estado": "activo",
+      "registrosProduccionIds": ["PR-2026-1029"]
+    },
+    {
+      "id": "OP-005",
+      "nombre": "Diego Salazar",
+      "correo": "diego.salazar@example.com",
+      "fechaRegistro": "2025-04-02",
+      "rol": "Operario de mezclado",
+      "estado": "activo",
+      "registrosProduccionIds": ["PR-2026-1028"]
+    }
+  ],
+  "productos": [
+    {
+      "id": "PRD-001",
+      "nombre": "Ladrillo Rojo 18 Huecos",
+      "descripcion": "Ladrillo cerámico para muros estructurales y cerramientos.",
+      "precioUnitario": 0.42,
+      "categoria": "Ladrillo cerámico",
+      "stockDisponible": 18400,
+      "unidadStock": "unidades",
+      "dimensionesCm": {
+        "largo": 24,
+        "ancho": 13,
+        "alto": 9
+      },
+      "pesoKg": 2.8,
+      "estado": "disponible"
+    },
+    {
+      "id": "PRD-002",
+      "nombre": "Ladrillo Pandereta",
+      "descripcion": "Pieza liviana de arcilla para tabiques interiores no portantes.",
+      "precioUnitario": 0.31,
+      "categoria": "Ladrillo cerámico",
+      "stockDisponible": 12600,
+      "unidadStock": "unidades",
+      "dimensionesCm": {
+        "largo": 23,
+        "ancho": 11,
+        "alto": 9
+      },
+      "pesoKg": 1.9,
+      "estado": "disponible"
+    },
+    {
+      "id": "PRD-003",
+      "nombre": "Ladrillo King Kong 18H",
+      "descripcion": "Ladrillo de alta resistencia para muros portantes.",
+      "precioUnitario": 0.58,
+      "categoria": "Ladrillo estructural",
+      "stockDisponible": 9200,
+      "unidadStock": "unidades",
+      "dimensionesCm": {
+        "largo": 24,
+        "ancho": 14,
+        "alto": 9
+      },
+      "pesoKg": 3.2,
+      "estado": "disponible"
+    },
+    {
+      "id": "PRD-004",
+      "nombre": "Ladrillo King Kong 9H",
+      "descripcion": "Pieza estructural compacta para construcción de muros resistentes.",
+      "precioUnitario": 0.51,
+      "categoria": "Ladrillo estructural",
+      "stockDisponible": 7350,
+      "unidadStock": "unidades",
+      "dimensionesCm": {
+        "largo": 24,
+        "ancho": 13,
+        "alto": 9
+      },
+      "pesoKg": 3,
+      "estado": "disponible"
+    },
+    {
+      "id": "PRD-005",
+      "nombre": "Bloque de Concreto 15cm",
+      "descripcion": "Bloque de concreto vibrocomprimido para muros y divisiones.",
+      "precioUnitario": 1.15,
+      "categoria": "Bloque de concreto",
+      "stockDisponible": 2480,
+      "unidadStock": "unidades",
+      "dimensionesCm": {
+        "largo": 39,
+        "ancho": 15,
+        "alto": 19
+      },
+      "pesoKg": 12.5,
+      "estado": "disponible"
+    },
+    {
+      "id": "PRD-006",
+      "nombre": "Teja Criolla",
+      "descripcion": "Teja de arcilla cocida para cubiertas inclinadas.",
+      "precioUnitario": 0.76,
+      "categoria": "Teja cerámica",
+      "stockDisponible": 1680,
+      "unidadStock": "unidades",
+      "dimensionesCm": {
+        "largo": 40,
+        "ancho": 20,
+        "alto": 6
+      },
+      "pesoKg": 1.7,
+      "estado": "disponible"
+    }
+  ],
+  "registrosProduccion": [
+    {
+      "id": "PR-2026-1028",
+      "fecha": "2026-10-28",
+      "operarioId": "OP-005",
+      "productoId": "PRD-001",
+      "cantidadFabricada": 5200,
+      "cantidadDanada": 156,
+      "cantidadAprobada": 5044,
+      "metaUnidades": 5000,
+      "mermaPorcentaje": 3,
+      "eficienciaPorcentaje": 100.88,
+      "horno": "Horno 1",
+      "turno": "mañana",
+      "lote": "LOT-RO-261028-A",
+      "estado": "completado"
+    },
+    {
+      "id": "PR-2026-1029",
+      "fecha": "2026-10-29",
+      "operarioId": "OP-004",
+      "productoId": "PRD-002",
+      "cantidadFabricada": 4600,
+      "cantidadDanada": 184,
+      "cantidadAprobada": 4416,
+      "metaUnidades": 4500,
+      "mermaPorcentaje": 4,
+      "eficienciaPorcentaje": 98.13,
+      "horno": "Horno 2",
+      "turno": "mañana",
+      "lote": "LOT-PA-261029-A",
+      "estado": "completado"
+    },
+    {
+      "id": "PR-2026-1030",
+      "fecha": "2026-10-30",
+      "operarioId": "OP-003",
+      "productoId": "PRD-003",
+      "cantidadFabricada": 3900,
+      "cantidadDanada": 117,
+      "cantidadAprobada": 3783,
+      "metaUnidades": 4000,
+      "mermaPorcentaje": 3,
+      "eficienciaPorcentaje": 94.58,
+      "horno": "Horno 1",
+      "turno": "tarde",
+      "lote": "LOT-KK18-261030-B",
+      "estado": "completado"
+    },
+    {
+      "id": "PR-2026-1101",
+      "fecha": "2026-11-01",
+      "operarioId": "OP-001",
+      "productoId": "PRD-001",
+      "cantidadFabricada": 5100,
+      "cantidadDanada": 102,
+      "cantidadAprobada": 4998,
+      "metaUnidades": 5000,
+      "mermaPorcentaje": 2,
+      "eficienciaPorcentaje": 99.96,
+      "horno": "Horno 1",
+      "turno": "mañana",
+      "lote": "LOT-RO-261101-A",
+      "estado": "completado"
+    },
+    {
+      "id": "PR-2026-1102",
+      "fecha": "2026-11-02",
+      "operarioId": "OP-002",
+      "productoId": "PRD-004",
+      "cantidadFabricada": 4200,
+      "cantidadDanada": 126,
+      "cantidadAprobada": 4074,
+      "metaUnidades": 4000,
+      "mermaPorcentaje": 3,
+      "eficienciaPorcentaje": 101.85,
+      "horno": "Horno 2",
+      "turno": "tarde",
+      "lote": "LOT-KK9-261102-B",
+      "estado": "completado"
+    },
+    {
+      "id": "PR-2026-1103",
+      "fecha": "2026-11-03",
+      "operarioId": "OP-003",
+      "productoId": "PRD-005",
+      "cantidadFabricada": 720,
+      "cantidadDanada": 18,
+      "cantidadAprobada": 702,
+      "metaUnidades": 700,
+      "mermaPorcentaje": 2.5,
+      "eficienciaPorcentaje": 100.29,
+      "horno": "Vibroprensa 1",
+      "turno": "mañana",
+      "lote": "LOT-BC15-261103-A",
+      "estado": "completado"
+    },
+    {
+      "id": "PR-2026-1104",
+      "fecha": "2026-11-04",
+      "operarioId": "OP-001",
+      "productoId": "PRD-006",
+      "cantidadFabricada": 2400,
+      "cantidadDanada": 96,
+      "cantidadAprobada": 2304,
+      "metaUnidades": 2500,
+      "mermaPorcentaje": 4,
+      "eficienciaPorcentaje": 92.16,
+      "horno": "Horno 2",
+      "turno": "mañana",
+      "lote": "LOT-TC-261104-A",
+      "estado": "completado"
+    },
+    {
+      "id": "PR-2026-1105",
+      "fecha": "2026-11-04",
+      "operarioId": "OP-002",
+      "productoId": "PRD-002",
+      "cantidadFabricada": 4700,
+      "cantidadDanada": 141,
+      "cantidadAprobada": 4559,
+      "metaUnidades": 4500,
+      "mermaPorcentaje": 3,
+      "eficienciaPorcentaje": 101.31,
+      "horno": "Horno 1",
+      "turno": "tarde",
+      "lote": "LOT-PA-261104-B",
+      "estado": "completado"
+    }
+  ]
+}
